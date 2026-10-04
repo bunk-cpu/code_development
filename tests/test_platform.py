@@ -17,11 +17,26 @@ from source_demo import agent_tools, code_qa, java_source, jobs, knowledge, manu
 @pytest.fixture
 def indexed(users, tmp_path, monkeypatch):
     monkeypatch.setenv("SOURCE_ALLOWED_ROOTS", str(tmp_path))
-    fixture = prepare(tmp_path / "repository")
+    fixture = prepare(tmp_path / "repository", git_history=True)
     repo = java_source.register("multi-module", fixture["root"])
     base = java_source.index_repository(repo["id"], "base")
     change = java_source.index_repository(repo["id"], "change")
     return repo, base, change
+
+
+def test_java_fixture_can_be_plain_directory_and_preserves_edits(users, tmp_path, monkeypatch):
+    monkeypatch.setenv("SOURCE_ALLOWED_ROOTS", str(tmp_path))
+    fixture = prepare(tmp_path / "sources", git_history=False)
+    root = Path(fixture["root"])
+    assert not (root / ".git").exists()
+    request = root / "api/src/main/java/demo/api/ExportRequest.java"
+    request.write_text(request.read_text() + "\n// local edit\n")
+    assert prepare(root, git_history=False) == fixture and request.read_text().endswith("// local edit\n")
+    assert not (root / ".git").exists()
+    repo = java_source.register("plain-sources", fixture["root"])
+    index = java_source.index_repository(repo["id"])
+    assert index["commit_sha"].startswith("tree-")
+    assert index["report"]["source_files_total"] == 7
 
 
 @pytest.fixture

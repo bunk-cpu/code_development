@@ -42,7 +42,7 @@ Worker 可按任务类型拆开运行，例如 `--kinds repository_index,module_
 
 ## Java 接入与源码分析
 
-`SOURCE_ALLOWED_ROOTS` 配置允许接入的目录，多个目录用冒号分隔。内部 `editor` 登记仓库及已准备的依赖 JAR、Java release；`analyst` 固定 Git ref 或完整 SHA 创建索引。索引读取 Git 对象，不执行业务仓库构建钩子；classpath 由已审阅构建提供。JDT 在临时源码树中解析，原仓库不被修改。
+`SOURCE_ALLOWED_ROOTS` 配置允许接入的目录，多个目录用冒号分隔。内部 `editor` 登记源码目录及已准备的依赖 JAR、Java release；Git 仓库由 `analyst` 固定 ref 或完整 SHA 创建索引，普通目录直接按当前文件生成内容哈希快照。索引不执行业务仓库构建钩子；classpath 由已审阅构建提供。JDT 在临时源码树中解析，原源码不被修改。
 
 模块、符号、方法重载、参数、返回类型、调用候选、继承/实现/覆盖、条件分支、Spring 声明、MyBatis/SQL/配置均带固定快照和行号。缺依赖、无法解析的调用及动态装配保留为缺口，不能用扫描文件数代替功能覆盖率。
 
@@ -56,7 +56,9 @@ mvn -q -f fixtures/java-project/pom.xml -pl common,orders,api -am install
 mvn -q -f fixtures/java-project/api/pom.xml dependency:copy-dependencies -DoutputDirectory=/root/code_development/data/java-classpath
 ```
 
-在工作台登记 `data/java-fixture` 的绝对路径，填写 `data/java-classpath` 下 JAR 的绝对路径，索引 `base` 和 `change`。两个历史版本分别包含导出上限 5000 和 1000，以及策略类移动；`broken` 模块保留缺依赖诊断。
+`data/java-fixture` 保留独立 Git 历史，准备脚本不覆盖已有源码。在工作台登记其绝对路径，填写 `data/java-classpath` 下 JAR 的绝对路径，索引 `base`、`change` 或完整提交 SHA。两个历史版本分别包含导出上限 5000、1000，以及策略类移动；历史中的 `broken` 模块保留缺依赖诊断。未提交修改不进入 Git 快照。版本比较测试与评测脚本使用临时仓库。
+
+后续接入的 Java 业务项目统一放在 `data/repositories/<项目名>/`，各项目保留自己的 `.git`；整个 `data/` 由主项目 Git 忽略。`fixtures/` 只存放可复现的回归测试样例，随系统代码提交，测试不依赖本机业务仓库。VS Code 工作区关闭子仓库自动发现，默认只显示主项目仓库。
 
 源码问答支持当前模块和跨模块调用链；引用由服务器校验。模块 Agent 通过薄 LangGraph、七个只读工具、有界预算、持久化检查点和摘要审核产生内部画像。编辑者可以确认功能，再生成手册候选。手册、测试和 TestPilot 运行可以人工登记模块映射，其登记不能证明同构建实测。
 

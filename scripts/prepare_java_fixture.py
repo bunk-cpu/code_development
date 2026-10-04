@@ -1,4 +1,4 @@
-"""Create a disposable Git history; the tracked fixture and user repositories remain untouched."""
+"""Prepare local Java samples with Git history; plain sources remain optional."""
 from pathlib import Path
 import shutil
 import subprocess
@@ -6,11 +6,14 @@ import subprocess
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def prepare(destination: Path | None = None) -> dict:
+def prepare(destination: Path | None = None, *, git_history: bool = True) -> dict:
     target = destination or ROOT / "data/java-fixture"
-    if not (target / ".git").exists():
+    if not target.exists() or not any(target.iterdir()):
         shutil.copytree(ROOT / "fixtures/java-project", target, dirs_exist_ok=True,
                         ignore=shutil.ignore_patterns("target"))
+    if not git_history:
+        return {"root": str(target)}
+    if not (target / ".git").exists():
         def git(*args):
             return subprocess.run(["git", "-C", str(target), *args], check=True, capture_output=True, text=True).stdout.strip()
         git("init", "-b", "main")

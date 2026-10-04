@@ -2,6 +2,7 @@
 import argparse
 import json
 import sys
+import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -39,12 +40,13 @@ def main():
     parser.add_argument("--repeat", type=int, default=1, choices=(1, 3))
     args = parser.parse_args()
     store.init()
-    fixture = prepare()
-    cp = [str(p.resolve()) for p in (store.ROOT / "data/java-classpath").glob("*.jar")]
-    repo = java_source.register("冻结 Java 评测域", fixture["root"], cp)
-    indexes = {ref: java_source.index_repository(repo["id"], ref) for ref in ("base", "change")}
     directory = store.ROOT / "data/validation/source-evaluation"
     directory.mkdir(parents=True, exist_ok=True)
+    cp = [str(p.resolve()) for p in (store.ROOT / "data/java-classpath").glob("*.jar")]
+    with tempfile.TemporaryDirectory(prefix="source-evaluation-", dir=directory) as temp:
+        fixture = prepare(Path(temp) / "repository", git_history=True)
+        repo = java_source.register("冻结 Java 评测域", fixture["root"], cp)
+        indexes = {ref: java_source.index_repository(repo["id"], ref) for ref in ("base", "change")}
     dataset = [{"id": i, "ref": ref, "sha": indexes[ref]["commit_sha"], "snapshot_id": indexes[ref]["snapshot_id"], "question": question, "literal": literal} for i, (ref, question, literal) in enumerate(QUESTIONS, 1)]
     (directory / "dataset.json").write_text(json.dumps(dataset, ensure_ascii=False, indent=2))
     def evaluate(item):

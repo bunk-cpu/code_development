@@ -2,7 +2,7 @@
 
 分析日期：2026-10-04。模型：沿用 TestPilot 配置的 `deepseek-v4-flash`。
 
-范围为当前工作目录中的 8 个 Java 文件，包含 7 个主源码文件和 1 个检查文件，不包含 `target/` 编译产物。当前文件包括已修复的 `LegacyBridge`，因此本报告与 Git 历史标签 `base`、`change` 的内容不完全相同。模型原始结果、调用元数据及文件 SHA-256 见 [analysis.json](../data/validation/java-fixture-function-analysis/analysis.json)。本报告已逐项对照源码核验；不是对部署环境或实际数据库执行的验证。
+范围为当前工作目录中的 8 个 Java 文件，包含 7 个主源码文件和 1 个检查文件，不包含 `target/` 编译产物。当前文件包括已修复但尚未提交的 `LegacyBridge`，与 Git 历史标签 `base`、`change` 的内容不完全相同。`data/java-fixture` 保留独立 Git 历史；系统按 ref 索引时读取提交快照，本报告则分析当前工作目录文件。模型原始结果、调用元数据及文件 SHA-256 见 [analysis.json](../data/validation/java-fixture-function-analysis/analysis.json)。本报告已逐项对照源码核验；不是对部署环境或实际数据库执行的验证。
 
 ## 主要功能
 
