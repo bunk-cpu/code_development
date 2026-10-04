@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: prod
+features:
+  order-export: true
+  export-limit: 5000
+integration:
+  api-key: should-never-reach-the-model

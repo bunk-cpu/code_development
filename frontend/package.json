@@ -1,0 +1,23 @@
+{
+  "name": "source-knowledge-demo-frontend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:internal": "vite --config vite.internal.config.ts",
+    "dev:customer": "vite --config vite.customer.config.ts",
+    "build:internal": "vite build --config vite.internal.config.ts",
+    "build:customer": "vite build --config vite.customer.config.ts",
+    "build": "npm run build:internal && npm run build:customer",
+    "typecheck": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "vue": "3.5.43"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "6.0.9",
+    "@types/node": "22.18.6",
+    "typescript": "5.9.3",
+    "vite": "8.3.1",
+    "vue-tsc": "3.3.11"
+  }
+}

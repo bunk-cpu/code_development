@@ -1,0 +1,28 @@
+[project]
+name = "source-knowledge-demo"
+version = "0.1.0"
+description = "源码证据、版本手册、问答、测试与只读流程 Demo"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "uvicorn>=0.30,<1",
+    "httpx>=0.27,<1",
+    "python-dotenv>=1.2.4",
+    "langgraph>=1.2.12",
+    "langgraph-checkpoint-sqlite>=3.1.1",
+    "psycopg[binary]>=3.2,<4",
+    "langgraph-checkpoint-postgres>=3.1,<4",
+    "markdown-it-py>=3,<5",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10"]
+
+[[tool.uv.index]]
+name = "tsinghua"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

@@ -1,0 +1,1 @@
+<mapper namespace="demo.orders.OrderMapper"><select id="findPaid">SELECT id FROM orders WHERE tenant_id = #{tenantId} AND status = 'PAID' LIMIT #{limit}</select></mapper>
